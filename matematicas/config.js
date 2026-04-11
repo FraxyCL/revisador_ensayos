@@ -2,8 +2,8 @@
 //  config.js  —  Gestión de configuración del ensayo
 // ═══════════════════════════════════════════════════════════
 
-const SKILLS = ['Representar', 'Resolver problemas', 'Modelar', 'Argumentar y comunicar'];
-const UNITS  = ['Números', 'Álgebra y funciones', 'Geometría', 'Probabilidad y estadística'];
+const SKILLS = ['No Aplica', 'Representar', 'Resolver problemas', 'Modelar', 'Argumentar y comunicar'];
+const UNITS  = ['No Aplica', 'Números', 'Álgebra y funciones', 'Geometría', 'Probabilidad y estadística'];
 const ANSWERS = ['A', 'B', 'C', 'D', 'E'];
 
 // Estado global de configuración
