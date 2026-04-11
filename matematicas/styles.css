@@ -287,6 +287,10 @@ button svg {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  position: sticky;
+  top: 20px;           /* se pega a 20px del tope al hacer scroll */
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 
 .entry-student-box {
@@ -448,6 +452,7 @@ button svg {
 .kv-b { border-color: rgba(56,189,248,0.4);  color: var(--blue); }
 .kv-c { border-color: rgba(251,146,60,0.4);  color: var(--orange); }
 .kv-d { border-color: rgba(244,114,182,0.4); color: var(--pink); }
+.kv-e { border-color: rgba(167,139,250,0.4); color: #a78bfa; }
 .kv-space { font-size: 0.62rem; border-color: rgba(90,122,154,0.4); color: var(--dim); flex: 1.4; }
 .kv-flash {
   transform: scale(0.88);
@@ -457,6 +462,7 @@ button svg {
 .kv-b.kv-flash    { background: rgba(56,189,248,0.2); }
 .kv-c.kv-flash    { background: rgba(251,146,60,0.2); }
 .kv-d.kv-flash    { background: rgba(244,114,182,0.2); }
+.kv-e.kv-flash    { background: rgba(167,139,250,0.2); }
 .kv-space.kv-flash { background: rgba(90,122,154,0.2); }
 
 .session-btns { display: flex; gap: 6px; }
@@ -510,7 +516,7 @@ button svg {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  overflow: hidden;
+  overflow: visible;   /* era hidden — cortaba el botón guardar en grillas largas */
   outline: none;
 }
 
@@ -623,12 +629,14 @@ button svg {
 .bbl-b { border-color: rgba(56,189,248,0.2); }
 .bbl-c { border-color: rgba(251,146,60,0.2); }
 .bbl-d { border-color: rgba(244,114,182,0.2); }
+.bbl-e { border-color: rgba(167,139,250,0.2); }  /* violeta para E */
 
 /* Burbuja marcada */
 .bbl-a.bbl-marked { background: var(--accent);  color: #000; border-color: var(--accent);  }
 .bbl-b.bbl-marked { background: var(--blue);    color: #000; border-color: var(--blue);    }
 .bbl-c.bbl-marked { background: var(--orange);  color: #000; border-color: var(--orange);  }
 .bbl-d.bbl-marked { background: var(--pink);    color: #000; border-color: var(--pink);    }
+.bbl-e.bbl-marked { background: #a78bfa;        color: #000; border-color: #a78bfa;        }
 
 .ag-status {
   font-size: 0.68rem;
@@ -641,14 +649,15 @@ button svg {
 .ag-row-incorrect .ag-status { color: var(--red); }
 .ag-row-omit      .ag-status { color: var(--dim); }
 
-/* ─── Entry Confirm ───────────────────────────────────── */
+/* ─── Entry Confirm (sidebar, sticky) ────────────────── */
 .entry-confirm-box {
-  border-top: 1px solid var(--border);
-  padding: 20px 24px;
+  background: rgba(0,229,160,0.06);
+  border: 1px solid rgba(0,229,160,0.25);
+  border-radius: var(--r);
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: var(--bg3);
 }
 
 .ecb-score {

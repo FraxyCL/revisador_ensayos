@@ -4,7 +4,7 @@
 
 // ─── Estado ──────────────────────────────────────────────
 let entryActive   = false;   // hay sesión activa
-let entryAnswers  = [];      // respuestas ingresadas: 'A'|'B'|'C'|'D'|'OMIT'
+let entryAnswers  = [];      // respuestas ingresadas: 'A'|'B'|'C'|'D'|'E'|'OMIT'
 let entryName     = '';
 let entryNumQ     = 65;
 let entryComplete = false;   // esperando confirmación
@@ -80,10 +80,12 @@ document.addEventListener('keydown', (e) => {
   }
 
   // Respuestas
-  if (['A', 'B', 'C', 'D'].includes(key)) {
+  const numMap = { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E' };
+  const mapped = numMap[e.key] || ((['A','B','C','D','E'].includes(key)) ? key : null);
+  if (mapped) {
     e.preventDefault();
-    registerAnswer(key);
-    flashKey(key);
+    registerAnswer(mapped);
+    flashKey(mapped);
     return;
   }
 
@@ -152,7 +154,6 @@ function finishEntry() {
   `;
 
   document.getElementById('entry-confirm-box').style.display = 'flex';
-  document.getElementById('entry-confirm-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // ─── Confirmar y guardar ──────────────────────────────────
@@ -277,6 +278,7 @@ function renderAnswerGrid() {
           <div class="ag-bubble bbl-b" id="bbl-${qIdx}-B">B</div>
           <div class="ag-bubble bbl-c" id="bbl-${qIdx}-C">C</div>
           <div class="ag-bubble bbl-d" id="bbl-${qIdx}-D">D</div>
+          <div class="ag-bubble bbl-e" id="bbl-${qIdx}-E">E</div>
         </div>
         <div class="ag-status" id="ags-${qIdx}"></div>
       `;
@@ -296,7 +298,7 @@ function renderAnswerGrid() {
 
 function updateAnswerCell(idx, ans) {
   // Limpiar burbujas de esa fila
-  ['A','B','C','D'].forEach(a => {
+  ['A','B','C','D','E'].forEach(a => {
     const bbl = document.getElementById(`bbl-${idx}-${a}`);
     if (bbl) bbl.className = `ag-bubble bbl-${a.toLowerCase()}`;
   });

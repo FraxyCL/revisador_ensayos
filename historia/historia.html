@@ -156,6 +156,7 @@
             <div class="kv-key kv-b" id="kv-B">B</div>
             <div class="kv-key kv-c" id="kv-C">C</div>
             <div class="kv-key kv-d" id="kv-D">D</div>
+            <div class="kv-key kv-e" id="kv-E">E</div>
             <div class="kv-key kv-space" id="kv-SPC">SPC</div>
           </div>
 
@@ -169,7 +170,22 @@
               Cancelar
             </button>
           </div>
-        </div>
+
+          <!-- ✅ Confirmación al completar — aquí siempre visible -->
+          <div class="entry-confirm-box" id="entry-confirm-box" style="display:none">
+            <div class="ecb-score" id="ecb-score"></div>
+            <div class="ecb-breakdown" id="ecb-breakdown"></div>
+            <div class="ecb-actions">
+              <button class="btn-confirm" onclick="confirmEntry()">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Guardar y siguiente
+                <kbd>Enter</kbd>
+              </button>
+              <button class="btn-ghost" onclick="cancelEntry()">Descartar</button>
+            </div>
+          </div>
+
+        </div><!-- /entry-session -->
 
         <!-- Lista de alumnos ya guardados -->
         <div class="entry-done-list" id="entry-done-list" style="display:none">
@@ -190,22 +206,8 @@
           <span class="egp-badge" id="egp-badge">—</span>
         </div>
 
-        <!-- Grilla de respuestas 5 columnas × 17 filas (o menos) -->
+        <!-- Grilla de respuestas -->
         <div class="answer-grid" id="answer-grid"></div>
-
-        <!-- Panel de confirmación al completar -->
-        <div class="entry-confirm-box" id="entry-confirm-box" style="display:none">
-          <div class="ecb-score" id="ecb-score"></div>
-          <div class="ecb-breakdown" id="ecb-breakdown"></div>
-          <div class="ecb-actions">
-            <button class="btn-confirm" onclick="confirmEntry()">
-              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-              Guardar y siguiente
-              <kbd>Enter</kbd>
-            </button>
-            <button class="btn-ghost" onclick="cancelEntry()">Descartar</button>
-          </div>
-        </div>
 
       </div><!-- /entry-grid-panel -->
 

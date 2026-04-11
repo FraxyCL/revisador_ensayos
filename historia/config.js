@@ -4,7 +4,7 @@
 
 const SKILLS = ['Pensamiento temporal y espacial', 'Análisis de fuente de información', 'Pensamiento critico'];
 const UNITS  = ['Historia: Mundo, América y Chile', 'Formación ciudadana', 'Sistema Económico'];
-const ANSWERS = ['A', 'B', 'C', 'D'];
+const ANSWERS = ['A', 'B', 'C', 'D', 'E'];
 
 // Estado global de configuración
 let appConfig = {
@@ -147,14 +147,16 @@ function loadConfig() {
 }
 
 function fillSampleConfig() {
-  // Demo rápida: alterna respuestas A/B/C/D cíclicamente
   const n = appConfig.numQuestions;
+  const ns = SKILLS.length;
+  const nu = UNITS.length;
+  const na = ANSWERS.length;
   for (let i = 0; i < n; i++) {
     appConfig.questions[i] = {
-      answer: ANSWERS[i % 4],
-      pilot: i % 17 === 8,           // una por columna como pilotaje
-      skill: Math.floor(i / (n / 4)) % 4,
-      unit:  Math.floor(i / (n / 4)) % 4
+      answer: ANSWERS[i % na],
+      pilot:  i % 17 === 8,
+      skill:  i % ns,
+      unit:   i % nu
     };
   }
   renderConfigTable();

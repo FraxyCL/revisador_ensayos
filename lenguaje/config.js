@@ -2,13 +2,16 @@
 //  config.js  —  Gestión de configuración del ensayo
 // ═══════════════════════════════════════════════════════════
 
-const SKILLS = ['No Aplica','Localizar', 'Interpretar', 'Evaluar'];
+const SKILLS = ['No Aplica',
+  'Localizar',
+  'Interpretar',
+  'Evaluar'];
 const UNITS  = ['No Aplica',
   'Extraer información explícita del texto','Identificar información explícita formulada a través de sinónimos y paráfrasis',
   'Establecer relaciones (causa/consecuencia, problema/solución, etc.) entre distintas partes','Elaborar inferencias sobre el significado local y global a partir de marcas textuales','Determinar el significado de una parte, párrafo o de la globalidad del texto','Sintetizar las ideas centrales de una sección o del texto completo','Identificar la jerarquía de las ideas de una parte del texto','Reconocer la función de un elemento textual (citas, figuras retóricas, ejemplos)',
   'Determinar la intención comunicativa del emisor o narrador.','Juzgar la calidad, pertinencia, suficiencia o consistencia de la información','Juzgar la forma (registro, estructura, propósito) en relación con la información','Calificar la posición, actitud o tono del emisor respecto del texto','	Valorar la pertinencia de recursos lingüísticos y no lingüísticos (imágenes, tipografía)','Valorar la información textual en relación con nuevos contextos',
 ];
-const ANSWERS = ['A', 'B', 'C', 'D'];
+const ANSWERS = ['A', 'B', 'C', 'D','E'];
 
 // Estado global de configuración
 let appConfig = {
@@ -151,14 +154,16 @@ function loadConfig() {
 }
 
 function fillSampleConfig() {
-  // Demo rápida: alterna respuestas A/B/C/D cíclicamente
   const n = appConfig.numQuestions;
+  const ns = SKILLS.length;
+  const nu = UNITS.length;
+  const na = ANSWERS.length;
   for (let i = 0; i < n; i++) {
     appConfig.questions[i] = {
-      answer: ANSWERS[i % 4],
-      pilot: i % 17 === 8,           // una por columna como pilotaje
-      skill: Math.floor(i / (n / 4)) % 4,
-      unit:  Math.floor(i / (n / 4)) % 4
+      answer: ANSWERS[i % na],
+      pilot:  i % 17 === 8,
+      skill:  i % ns,
+      unit:   i % nu
     };
   }
   renderConfigTable();
