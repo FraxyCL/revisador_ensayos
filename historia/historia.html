@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revisador Ensayos · Historia</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-mark">🌎</span>
+    <span class="logo-text">Corrector<br><small>Historia</small></span>
+  </div>
+  <div class="sidebar-nav">
+    <button class="nav-btn active" data-tab="config" onclick="showTab('config')">
+      <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Configurar
+    </button>
+    <button class="nav-btn" data-tab="entry" onclick="showTab('entry')">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><line x1="7" y1="8" x2="7" y2="8"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="17" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="7" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="17" y1="12" x2="17" y2="12"/></svg>
+      Ingresar
+    </button>
+    <button class="nav-btn" data-tab="results" onclick="showTab('results')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Resultados
+    </button>
+  </div>
+  <div class="sidebar-info">
+    <div class="sidebar-count">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span id="scan-count">0 alumnos</span>
+    </div>
+    <button id="clear-btn" onclick="clearAllResults()">Borrar todo</button>
+    <div style="font-size: 12px; color: #777; margin-top: 10px;"> Herramienta desarrollada por <strong>Michael Núñez</strong>. <br>Uso libre autorizado.
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════ -->
+<main id="main-content">
+
+  <!-- ── TAB CONFIGURACIÓN ── -->
+  <section id="tab-config" class="tab-section active">
+    <div class="section-header">
+      <h1>Configuración del Ensayo</h1>
+      <p>Define respuestas correctas, habilidades y unidades por pregunta</p>
+    </div>
+
+    <div class="config-controls">
+      <div class="control-group">
+        <label>N° de preguntas</label>
+        <div class="num-q-group">
+          <input type="number" id="num-q-input" min="1" max="200" value="65"
+                 onchange="setNumQuestions(parseInt(this.value)||65)"
+                 onkeydown="if(event.key==='Enter') setNumQuestions(parseInt(this.value)||65)" />
+          <div class="num-q-presets">
+            <button class="preset-btn" onclick="applyPreset(45)">45</button>
+            <button class="preset-btn active" id="preset-65" onclick="applyPreset(65)">65</button>
+            <button class="preset-btn" onclick="applyPreset(85)">85</button>
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <button class="btn-primary" onclick="saveConfig()">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar
+        </button>
+        <button class="btn-secondary" onclick="loadConfig()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Cargar guardada
+        </button>
+        <button class="btn-ghost" onclick="fillSampleConfig()">Demo rápida</button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="config-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Respuesta</th><th>Pilotaje</th><th>Habilidad</th><th>Unidad</th>
+          </tr>
+        </thead>
+        <tbody id="config-body"></tbody>
+      </table>
+    </div>
+    <div class="config-status" id="config-status"></div>
+  </section>
+
+  <!-- ── TAB INGRESO RÁPIDO ── -->
+  <section id="tab-entry" class="tab-section">
+    <div class="section-header">
+      <h1>Ingreso Rápido por Teclado</h1>
+      <p>Teclea <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> para cada respuesta · <kbd>Espacio</kbd> omitida · <kbd>⌫</kbd> deshace</p>
+    </div>
+
+    <div class="entry-layout">
+
+      <!-- ── Panel izquierdo ── -->
+      <div class="entry-sidebar">
+
+        <!-- Caja de nombre -->
+        <div class="entry-student-box" id="entry-student-box">
+          <label>Nombre del alumno</label>
+          <input type="text" id="entry-name" placeholder="Nombre o RUT..."
+                 autocomplete="off" spellcheck="false"
+                 onkeydown="if(event.key==='Enter') startEntry()" />
+          <button class="btn-start" id="btn-start-entry" onclick="startEntry()">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Iniciar ingreso
+          </button>
+        </div>
+
+        <!-- Instrucciones (cuando no hay sesión activa) -->
+        <div class="entry-instructions" id="entry-instructions">
+          <div class="inst-step"><span class="inst-num">1</span><p>Escribe el nombre del alumno</p></div>
+          <div class="inst-step"><span class="inst-num">2</span><p>Presiona <strong>Iniciar</strong> o <kbd>Enter</kbd></p></div>
+          <div class="inst-step"><span class="inst-num">3</span><p>Teclea <kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> sin usar el mouse</p></div>
+          <div class="inst-step"><span class="inst-num">4</span><p><kbd>Space</kbd> = omitida &nbsp;·&nbsp; <kbd>⌫</kbd> = corregir</p></div>
+        </div>
+
+        <!-- Estado de sesión activa -->
+        <div class="entry-session" id="entry-session" style="display:none">
+
+          <div class="session-who">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="session-name-label">—</span>
+          </div>
+
+          <div class="session-progress">
+            <div class="sp-top">
+              <span class="sp-label">Pregunta</span>
+              <span class="sp-frac"><b id="sp-current">1</b> / <span id="sp-total">65</span></span>
+            </div>
+            <div class="sp-bar-track">
+              <div class="sp-bar-fill" id="sp-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="session-live">
+            <div class="slv green" id="ls-correct"><span>✓</span><strong>0</strong><small>correctas</small></div>
+            <div class="slv red"   id="ls-incorrect"><span>✗</span><strong>0</strong><small>incorrectas</small></div>
+            <div class="slv gray"  id="ls-omit"><span>—</span><strong>0</strong><small>omitidas</small></div>
+          </div>
+
+          <div class="keyboard-visual">
+            <div class="kv-key kv-a" id="kv-A">A</div>
+            <div class="kv-key kv-b" id="kv-B">B</div>
+            <div class="kv-key kv-c" id="kv-C">C</div>
+            <div class="kv-key kv-d" id="kv-D">D</div>
+            <div class="kv-key kv-e" id="kv-E">E</div>
+            <div class="kv-key kv-space" id="kv-SPC">SPC</div>
+          </div>
+
+          <div class="session-btns">
+            <button class="btn-undo" onclick="undoLast()" title="Deshacer última (Backspace)">
+              <svg viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>
+              Deshacer
+            </button>
+            <button class="btn-cancel-entry" onclick="cancelEntry()">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Cancelar
+            </button>
+          </div>
+
+        </div><!-- /entry-session -->
+
+        <!-- Lista de alumnos ya guardados -->
+        <div class="entry-done-list" id="entry-done-list" style="display:none">
+          <div class="edl-header">
+            <span id="edl-count">0 guardados</span>
+            <button class="btn-ghost btn-sm" onclick="showTab('results')">Ver resultados →</button>
+          </div>
+          <div id="edl-items" class="edl-items"></div>
+        </div>
+
+      </div><!-- /entry-sidebar -->
+
+      <!-- ── Panel derecho: grilla visual ── -->
+      <div class="entry-grid-panel">
+
+        <div class="egp-topbar">
+          <span class="egp-name" id="egp-name">Esperando alumno…</span>
+          <span class="egp-badge" id="egp-badge">—</span>
+        </div>
+
+        <!-- Grilla de respuestas 5 columnas × 17 filas (o menos) -->
+        <div class="answer-grid" id="answer-grid"></div>
+
+        <!-- Panel de confirmación al completar -->
+        <div class="entry-confirm-box" id="entry-confirm-box" style="display:none">
+          <div class="ecb-score" id="ecb-score"></div>
+          <div class="ecb-breakdown" id="ecb-breakdown"></div>
+          <div class="ecb-actions">
+            <button class="btn-confirm" onclick="confirmEntry()">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              Guardar y siguiente
+              <kbd>Enter</kbd>
+            </button>
+            <button class="btn-ghost" onclick="cancelEntry()">Descartar</button>
+          </div>
+        </div>
+
+      </div><!-- /entry-grid-panel -->
+
+    </div><!-- /entry-layout -->
+  </section>
+
+  <!-- ── TAB RESULTADOS ── -->
+  <section id="tab-results" class="tab-section">
+    <div class="section-header">
+      <h1>Resultados del Curso</h1>
+      <p id="results-summary-text">Sin alumnos ingresados aún</p>
+    </div>
+
+    <div id="results-empty" class="results-empty">
+      <div class="empty-icon">📊</div>
+      <p>Ingresa hojas de respuestas para ver los resultados aquí</p>
+      <button class="btn-primary" onclick="showTab('entry')" style="margin-top:18px">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Ir a ingreso
+      </button>
+    </div>
+
+    <div id="results-content" style="display:none">
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Desempeño por Habilidad</h3>
+          <canvas id="chart-skills"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Desempeño por Unidad</h3>
+          <canvas id="chart-units"></canvas>
+        </div>
+        <div class="chart-card chart-wide">
+          <h3>Distribución de Puntajes</h3>
+          <canvas id="chart-distribution"></canvas>
+        </div>
+      </div>
+      <div class="students-table-wrap">
+        <div class="students-header">
+          <h3>Detalle por Alumno</h3>
+          <button class="btn-ghost" onclick="exportCSV()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+        </div>
+        <table class="students-table">
+          <thead>
+            <tr>
+              <th>Alumno</th><th>Correctas</th><th>Incorrectas</th>
+              <th>Omitidas</th><th>Puntaje</th><th>%</th><th>Ver</th><th>Eliminar</th>
+            </tr>
+          </thead>
+          <tbody id="students-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL DETALLE -->
+<div id="modal-overlay" class="modal-overlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="config.js"></script>
+<script src="entry.js"></script>
+<script src="results.js"></script>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+  if (name === 'results') renderResults();
+  if (name === 'entry' && !entryActive)
+    setTimeout(() => document.getElementById('entry-name').focus(), 80);
+}
+
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
