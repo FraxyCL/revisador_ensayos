@@ -419,7 +419,11 @@ function evaluateAnswers(answers, config) {
         byUnit[q.unit].correct++;
       }
     }
-    detail.push({ q: i + 1, expected: q.answer, detected: det, status, pilot: q.pilot });
+    detail.push({
+      q: i + 1, expected: q.answer, detected: det, status, pilot: q.pilot,
+      nature: q.nature !== undefined ? q.nature : 0,   // exclusivo Lenguaje; en otras asignaturas queda en 0 sin efecto
+      genre:  q.genre  !== undefined ? q.genre  : 0
+    });
   }
 
   const validTotal = config.numQuestions - questions.filter(q => q.pilot).length;

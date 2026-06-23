@@ -963,3 +963,74 @@ button svg {
 @media (max-width: 600px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ═══════════════════════════════════════════════════════
+   ESTADÍSTICA POR PREGUNTA  (nuevo bloque — no modifica nada anterior)
+═══════════════════════════════════════════════════════ */
+
+.section-subheader {
+  margin-bottom: 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+.section-subheader h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e8f0fc;
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 4px;
+}
+.section-subheader p {
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.pq-ranking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.pq-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pq-rank-item {
+  display: grid;
+  grid-template-columns: 36px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+.pq-rank-q {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  color: var(--text);
+}
+.pq-rank-bar {
+  height: 7px;
+  background: var(--bg3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.pq-rank-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+.pq-rank-fill.good { background: var(--accent); }
+.pq-rank-fill.bad  { background: var(--red); }
+.pq-rank-pct {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  text-align: right;
+  font-size: 0.78rem;
+}
+.pq-rank-item.good .pq-rank-pct { color: var(--accent); }
+.pq-rank-item.bad  .pq-rank-pct { color: var(--red); }
+
+@media (max-width: 900px) {
+  .pq-ranking-grid { grid-template-columns: 1fr; }
+}

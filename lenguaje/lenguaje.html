@@ -82,11 +82,46 @@
       </div>
     </div>
 
+    <!-- ═══ NUEVO: Asignación rápida de Naturaleza y Género por rango (exclusivo Lenguaje) ═══ -->
+    <div class="tt-range-box">
+      <div class="tt-range-title">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Asignar clasificación de texto por rango de preguntas
+      </div>
+
+      <div class="tt-range-controls">
+        <span>Naturaleza — de la pregunta</span>
+        <input type="number" id="range-nature-from" min="1" placeholder="1" />
+        <span>a la</span>
+        <input type="number" id="range-nature-to" min="1" placeholder="9" />
+        <span>asignar:</span>
+        <select id="range-nature-type" class="mini-select"></select>
+        <button class="btn-secondary" onclick="applyRange('nature')">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Aplicar
+        </button>
+      </div>
+
+      <div class="tt-range-controls" style="margin-top:10px;">
+        <span>Género — de la pregunta</span>
+        <input type="number" id="range-genre-from" min="1" placeholder="1" />
+        <span>a la</span>
+        <input type="number" id="range-genre-to" min="1" placeholder="9" />
+        <span>asignar:</span>
+        <select id="range-genre-type" class="mini-select"></select>
+        <button class="btn-secondary" onclick="applyRange('genre')">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Aplicar
+        </button>
+      </div>
+
+    </div>
+
     <div class="table-wrapper">
       <table id="config-table">
         <thead>
           <tr>
-            <th>#</th><th>Respuesta</th><th>Pilotaje</th><th>Habilidad</th><th>Tarea</th>
+            <th>#</th><th>Respuesta</th><th>Pilotaje</th><th>Habilidad</th><th>Tarea</th><th>Naturaleza</th><th>Género</th>
           </tr>
         </thead>
         <tbody id="config-body"></tbody>
@@ -263,6 +298,84 @@
           <tbody id="students-body"></tbody>
         </table>
       </div>
+
+      <!-- ═══ NUEVO: Estadística por pregunta ═══ -->
+      <div id="per-question-section" style="display:none; margin-top:24px;">
+        <div class="section-subheader">
+          <h2>Estadística por Pregunta</h2>
+          <p>Comparación del % de acierto de cada pregunta entre todos los alumnos ingresados</p>
+        </div>
+
+        <div class="pq-ranking-grid">
+          <div class="chart-card">
+            <h3>🏆 Top 5 más acertadas</h3>
+            <div id="pq-best-list" class="pq-rank-list"></div>
+          </div>
+          <div class="chart-card">
+            <h3>⚠️ Top 5 menos acertadas</h3>
+            <div id="pq-worst-list" class="pq-rank-list"></div>
+          </div>
+        </div>
+
+        <div class="chart-card" style="margin-top:18px;">
+          <h3>% de Acierto por Pregunta</h3>
+          <canvas id="chart-per-question" height="90"></canvas>
+        </div>
+
+        <div class="students-table-wrap" style="margin-top:18px;">
+          <div class="students-header">
+            <h3>Detalle por Pregunta</h3>
+          </div>
+          <div class="table-wrapper" style="max-height:50vh;">
+            <table class="students-table">
+              <thead>
+                <tr>
+                  <th>N° Pregunta</th><th>Cant. Correctas</th><th>Cant. Incorrectas</th><th>Omitidas</th><th>% Acierto</th>
+                </tr>
+              </thead>
+              <tbody id="pq-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- ═══ FIN bloque nuevo ═══ -->
+
+      <!-- ═══ NUEVO: Estadística por Naturaleza y Género de texto (exclusivo Lenguaje) ═══ -->
+      <div id="text-class-section" style="display:none; margin-top:24px;">
+        <div class="section-subheader">
+          <h2>Desempeño por Clasificación de Texto</h2>
+          <p>Resultados agrupados según la naturaleza y el género de cada texto del ensayo</p>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>Por Naturaleza</h3>
+            <canvas id="chart-nature"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Por Género</h3>
+            <canvas id="chart-genre"></canvas>
+          </div>
+        </div>
+
+        <div class="students-table-wrap" style="margin-top:18px;">
+          <div class="students-header">
+            <h3>Detalle por Clasificación</h3>
+          </div>
+          <div class="table-wrapper" style="max-height:50vh;">
+            <table class="students-table">
+              <thead>
+                <tr>
+                  <th>Clasificación</th><th>Categoría</th><th>Preguntas</th><th>Correctas</th><th>% Logro</th>
+                </tr>
+              </thead>
+              <tbody id="tc-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- ═══ FIN bloque nuevo ═══ -->
+
     </div>
   </section>
 

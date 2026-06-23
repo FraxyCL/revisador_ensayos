@@ -2,8 +2,8 @@
 //  config.js  —  Gestión de configuración del ensayo
 // ═══════════════════════════════════════════════════════════
 
-const SKILLS = ['No Aplica', 'Pensamiento temporal y espacial', 'Análisis de fuente de información', 'Pensamiento critico'];
-const UNITS  = ['No Aplica', 'Historia: Mundo, América y Chile', 'Formación ciudadana', 'Sistema Económico'];
+const SKILLS = ['Sin asignar', 'Pensamiento temporal y espacial', 'Análisis de fuente de información', 'Pensamiento critico'];
+const UNITS  = ['Sin asignar', 'Historia: Mundo, América y Chile', 'Formación ciudadana', 'Sistema Económico'];
 const ANSWERS = ['A', 'B', 'C', 'D', 'E'];
 
 // Estado global de configuración

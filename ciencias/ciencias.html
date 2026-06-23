@@ -16,7 +16,7 @@
 <nav id="sidebar">
   <div class="sidebar-logo">
     <span class="logo-mark">🔬</span>
-    <span class="logo-text">Corrector<br><small>Ciencias</small></span>
+    <span class="logo-text">Revisador Ensayos<br><small>Ciencias</small></span>
   </div>
   <div class="sidebar-nav">
     <button class="nav-btn active" data-tab="config" onclick="showTab('config')">
@@ -86,7 +86,7 @@
       <table id="config-table">
         <thead>
           <tr>
-            <th>#</th><th>Respuesta</th><th>Pilotaje</th><th>Habilidad</th><th>Unidad</th>
+            <th>#</th><th>Respuesta</th><th>Pilotaje</th><th>Habilidad</th><th>Tarea</th>
           </tr>
         </thead>
         <tbody id="config-body"></tbody>
@@ -99,7 +99,7 @@
   <section id="tab-entry" class="tab-section">
     <div class="section-header">
       <h1>Ingreso Rápido por Teclado</h1>
-      <p>Teclea <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> para cada respuesta · <kbd>Espacio</kbd> omitida · <kbd>⌫</kbd> deshace</p>
+      <p>Teclea <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> <kbd>E</kbd>para cada respuesta · <kbd>Espacio</kbd> omitida · <kbd>⌫</kbd> deshace</p>
     </div>
 
     <div class="entry-layout">
@@ -123,7 +123,7 @@
         <div class="entry-instructions" id="entry-instructions">
           <div class="inst-step"><span class="inst-num">1</span><p>Escribe el nombre del alumno</p></div>
           <div class="inst-step"><span class="inst-num">2</span><p>Presiona <strong>Iniciar</strong> o <kbd>Enter</kbd></p></div>
-          <div class="inst-step"><span class="inst-num">3</span><p>Teclea <kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> sin usar el mouse</p></div>
+          <div class="inst-step"><span class="inst-num">3</span><p>Teclea <kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd><kbd>E</kbd> sin usar el mouse</p></div>
           <div class="inst-step"><span class="inst-num">4</span><p><kbd>Space</kbd> = omitida &nbsp;·&nbsp; <kbd>⌫</kbd> = corregir</p></div>
         </div>
 
@@ -263,6 +263,48 @@
           <tbody id="students-body"></tbody>
         </table>
       </div>
+
+      <!-- ═══ NUEVO: Estadística por pregunta ═══ -->
+      <div id="per-question-section" style="display:none; margin-top:24px;">
+        <div class="section-subheader">
+          <h2>Estadística por Pregunta</h2>
+          <p>Comparación del % de acierto de cada pregunta entre todos los alumnos ingresados</p>
+        </div>
+
+        <div class="pq-ranking-grid">
+          <div class="chart-card">
+            <h3>🏆 Top 5 más acertadas</h3>
+            <div id="pq-best-list" class="pq-rank-list"></div>
+          </div>
+          <div class="chart-card">
+            <h3>⚠️ Top 5 menos acertadas</h3>
+            <div id="pq-worst-list" class="pq-rank-list"></div>
+          </div>
+        </div>
+
+        <div class="chart-card" style="margin-top:18px;">
+          <h3>% de Acierto por Pregunta</h3>
+          <canvas id="chart-per-question" height="90"></canvas>
+        </div>
+
+        <div class="students-table-wrap" style="margin-top:18px;">
+          <div class="students-header">
+            <h3>Detalle por Pregunta</h3>
+          </div>
+          <div class="table-wrapper" style="max-height:50vh;">
+            <table class="students-table">
+              <thead>
+                <tr>
+                  <th>N° Pregunta</th><th>Cant. Correctas</th><th>Cant. Incorrectas</th><th>Omitidas</th><th>% Acierto</th>
+                </tr>
+              </thead>
+              <tbody id="pq-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- ═══ FIN bloque nuevo ═══ -->
+
     </div>
   </section>
 

@@ -49,6 +49,8 @@ function renderResults() {
   renderChartsUnits(summary);
   renderDistributionChart(results);
   renderStudentsTable(results);
+  renderPerQuestionStats(results);   // estadística por pregunta
+  renderTextClassStats(results);     // ← nuevo: estadística por Naturaleza/Género (exclusivo Lenguaje)
 }
 
 // ─── Resumen global ──────────────────────────────────────
@@ -437,3 +439,310 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('scan-count').textContent = `${count} alumno${count !== 1 ? 's' : ''}`;
   }
 });
+
+// ═══════════════════════════════════════════════════════════
+//  ESTADÍSTICA POR PREGUNTA  (nuevo — no toca nada anterior)
+// ═══════════════════════════════════════════════════════════
+
+// ─── Cálculo: % de acierto de cada pregunta a través de todos los alumnos ──
+function computePerQuestionStats(results) {
+  if (!results.length) return [];
+
+  const numQ = results[0].detail.length;
+  const stats = [];
+
+  for (let i = 0; i < numQ; i++) {
+    let correct = 0, incorrect = 0, omit = 0, invalid = 0, total = 0;
+    let isPilot = false;
+
+    results.forEach(r => {
+      const d = r.detail[i];
+      if (!d) return;
+      isPilot = d.pilot;
+      if (d.pilot) return; // las preguntas de pilotaje no entran en este ranking
+
+      total++;
+      if (d.status === 'correct')   correct++;
+      else if (d.status === 'incorrect') incorrect++;
+      else if (d.status === 'omit')      omit++;
+      else if (d.status === 'invalid')   invalid++;
+    });
+
+    const pct = total > 0 ? Math.round(correct / total * 100) : null;
+
+    stats.push({
+      qNum: i + 1,
+      pilot: isPilot,
+      total, correct, incorrect, omit, invalid,
+      pct
+    });
+  }
+
+  return stats;
+}
+
+// ─── Render principal de la sección ──────────────────────
+function renderPerQuestionStats(results) {
+  const container = document.getElementById('per-question-section');
+  if (!container) return; // si el HTML no tiene el bloque, no rompe nada
+
+  const stats = computePerQuestionStats(results).filter(s => !s.pilot && s.total > 0);
+  if (!stats.length) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+
+  const sorted = [...stats].sort((a, b) => b.pct - a.pct);
+  const best   = sorted.slice(0, 5);
+  const worst  = sorted.slice(-5).reverse();
+
+  renderPerQuestionTopCards(best, worst);
+  renderPerQuestionChart(stats);
+  renderPerQuestionTable(stats);
+}
+
+// ─── Tarjetas: top 5 más acertadas / menos acertadas ─────
+function renderPerQuestionTopCards(best, worst) {
+  const bestEl  = document.getElementById('pq-best-list');
+  const worstEl = document.getElementById('pq-worst-list');
+  if (!bestEl || !worstEl) return;
+
+  bestEl.innerHTML = best.map(s => `
+    <div class="pq-rank-item good">
+      <span class="pq-rank-q">P${s.qNum}</span>
+      <div class="pq-rank-bar"><div class="pq-rank-fill good" style="width:${s.pct}%"></div></div>
+      <span class="pq-rank-pct">${s.pct}%</span>
+    </div>
+  `).join('');
+
+  worstEl.innerHTML = worst.map(s => `
+    <div class="pq-rank-item bad">
+      <span class="pq-rank-q">P${s.qNum}</span>
+      <div class="pq-rank-bar"><div class="pq-rank-fill bad" style="width:${s.pct}%"></div></div>
+      <span class="pq-rank-pct">${s.pct}%</span>
+    </div>
+  `).join('');
+}
+
+// ─── Gráfico de barras: % acierto por cada pregunta ──────
+function renderPerQuestionChart(stats) {
+  const canvas = document.getElementById('chart-per-question');
+  if (!canvas) return;
+
+  const labels = stats.map(s => `P${s.qNum}`);
+  const data   = stats.map(s => s.pct);
+
+  destroyChart('chart-per-question');
+  const ctx = canvas.getContext('2d');
+  chartInstances['chart-per-question'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '% Acierto',
+        data,
+        backgroundColor: data.map(v => v >= 60 ? '#22d3a3' : v >= 40 ? '#f59e0b' : '#ef4444'),
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => `Pregunta ${items[0].label.replace('P','')}`,
+            label: (item) => `${item.formattedValue}% de acierto`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true, max: 100,
+          ticks: { callback: v => v + '%', color: '#94a3b8' },
+          grid: { color: '#1e293b' }
+        },
+        x: {
+          ticks: { color: '#94a3b8', maxRotation: 90, minRotation: 90, autoSkip: true },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// ─── Tabla completa por pregunta ──────────────────────────
+function renderPerQuestionTable(stats) {
+  const tbody = document.getElementById('pq-table-body');
+  if (!tbody) return;
+
+  tbody.innerHTML = stats.map(s => `
+    <tr>
+      <td><strong>P${s.qNum}</strong></td>
+      <td class="txt-green">${s.correct}</td>
+      <td class="txt-red">${s.incorrect}</td>
+      <td class="txt-gray">${s.omit}</td>
+      <td>
+        <div class="pct-bar">
+          <div class="pct-fill ${s.pct>=60?'good':s.pct>=40?'mid':'low'}" style="width:${s.pct}%"></div>
+          <span>${s.pct}%</span>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ESTADÍSTICA POR NATURALEZA Y GÉNERO  (exclusivo Lenguaje)
+//  Nuevo bloque — no modifica nada de lo anterior.
+//  Si NATURES/GENRES no existen (otras asignaturas), las
+//  funciones detectan su ausencia y no hacen nada.
+// ═══════════════════════════════════════════════════════════
+
+function computeTextClassStats(results) {
+  // Si esta asignatura no tiene NATURES/GENRES definidos, no aplica.
+  if (typeof NATURES === 'undefined' || typeof GENRES === 'undefined') return null;
+
+  const byNature = NATURES.map((name, idx) => ({ idx, name, correct: 0, total: 0 }));
+  const byGenre  = GENRES.map((name, idx)  => ({ idx, name, correct: 0, total: 0 }));
+
+  results.forEach(r => {
+    r.detail.forEach(d => {
+      if (d.pilot) return; // las preguntas de pilotaje no entran en esta estadística
+
+      const natIdx = d.nature || 0;
+      const genIdx = d.genre  || 0;
+
+      if (byNature[natIdx]) {
+        byNature[natIdx].total++;
+        if (d.status === 'correct') byNature[natIdx].correct++;
+      }
+      if (byGenre[genIdx]) {
+        byGenre[genIdx].total++;
+        if (d.status === 'correct') byGenre[genIdx].correct++;
+      }
+    });
+  });
+
+  return { byNature, byGenre };
+}
+
+// ─── Render principal ─────────────────────────────────────
+function renderTextClassStats(results) {
+  const container = document.getElementById('text-class-section');
+  if (!container) return; // si el HTML no tiene el bloque (otras asignaturas), no hace nada
+
+  const stats = computeTextClassStats(results);
+  if (!stats) { container.style.display = 'none'; return; }
+
+  // Excluir "Sin asignar" (índice 0) y categorías sin preguntas asociadas
+  const natFiltered = stats.byNature.filter((s, i) => i !== 0 && s.total > 0);
+  const genFiltered = stats.byGenre.filter((s, i) => i !== 0 && s.total > 0);
+
+  if (natFiltered.length === 0 && genFiltered.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = 'block';
+
+  renderTextClassChart('chart-nature', natFiltered);
+  renderTextClassChart('chart-genre', genFiltered);
+  renderTextClassTable(natFiltered, genFiltered);
+}
+
+// ─── Gráfico de barras horizontales (Naturaleza o Género) ─
+function renderTextClassChart(canvasId, dataList) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  destroyChart(canvasId);
+
+  if (dataList.length === 0) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  const labels = dataList.map(s => wrapLabel(s.name, 16));
+  const data   = dataList.map(s => s.total > 0 ? Math.round(s.correct / s.total * 100) : 0);
+
+  const ctx = canvas.getContext('2d');
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '% Logro',
+        data,
+        backgroundColor: data.map(v => v >= 60 ? '#22d3a3' : v >= 40 ? '#f59e0b' : '#ef4444'),
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',   // barras horizontales — más legible con nombres de categoría largos
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => `${item.formattedValue}% de logro`
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true, max: 100,
+          ticks: { callback: v => v + '%', color: '#94a3b8' },
+          grid: { color: '#1e293b' }
+        },
+        y: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ─── Tabla combinada Naturaleza + Género ──────────────────
+function renderTextClassTable(natList, genList) {
+  const tbody = document.getElementById('tc-table-body');
+  if (!tbody) return;
+
+  const rows = [];
+
+  natList.forEach(s => {
+    const pct = s.total > 0 ? Math.round(s.correct / s.total * 100) : 0;
+    rows.push(`
+      <tr>
+        <td><span class="tc-tag nature">Naturaleza</span></td>
+        <td>${escHtmlR(s.name)}</td>
+        <td>${s.total}</td>
+        <td class="txt-green">${s.correct}</td>
+        <td>
+          <div class="pct-bar">
+            <div class="pct-fill ${pct>=60?'good':pct>=40?'mid':'low'}" style="width:${pct}%"></div>
+            <span>${pct}%</span>
+          </div>
+        </td>
+      </tr>
+    `);
+  });
+
+  genList.forEach(s => {
+    const pct = s.total > 0 ? Math.round(s.correct / s.total * 100) : 0;
+    rows.push(`
+      <tr>
+        <td><span class="tc-tag genre">Género</span></td>
+        <td>${escHtmlR(s.name)}</td>
+        <td>${s.total}</td>
+        <td class="txt-green">${s.correct}</td>
+        <td>
+          <div class="pct-bar">
+            <div class="pct-fill ${pct>=60?'good':pct>=40?'mid':'low'}" style="width:${pct}%"></div>
+            <span>${pct}%</span>
+          </div>
+        </td>
+      </tr>
+    `);
+  });
+
+  tbody.innerHTML = rows.join('');
+}

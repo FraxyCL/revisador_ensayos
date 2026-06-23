@@ -2,13 +2,13 @@
 //  config.js  —  Gestión de configuración del ensayo
 // ═══════════════════════════════════════════════════════════
 
-const SKILLS = ['No Aplica', 
+const SKILLS = ['Sin asignar', 
   'Observar y plantear preguntas',
   'Planificar y conducir una investigación',
   'Procesar y analizar la evidencia',
   'Evaluar',
   'Comunicar'];
-const UNITS  = ['No Aplica',
+const UNITS  = ['Sin asignar',
   'Biología: Celula', 'Biología: Procesos biológicos', 'Biología: Herencia y evolución', 'Biología: Organismo y ambiente',
   'Física: Ondas', 'Física: Mecánica', 'Física: Energía-Tierra', 'Física: Electricidad',
   'Química: Estructura atómica', 'Química: Química orgánica', 'Química: Reacciones químicas/Estequiometría',

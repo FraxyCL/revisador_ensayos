@@ -49,6 +49,7 @@ function renderResults() {
   renderChartsUnits(summary);
   renderDistributionChart(results);
   renderStudentsTable(results);
+  renderPerQuestionStats(results);   // ← nuevo: estadística por pregunta
 }
 
 // ─── Resumen global ──────────────────────────────────────
@@ -437,3 +438,154 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('scan-count').textContent = `${count} alumno${count !== 1 ? 's' : ''}`;
   }
 });
+
+// ═══════════════════════════════════════════════════════════
+//  ESTADÍSTICA POR PREGUNTA  (nuevo — no toca nada anterior)
+// ═══════════════════════════════════════════════════════════
+
+// ─── Cálculo: % de acierto de cada pregunta a través de todos los alumnos ──
+function computePerQuestionStats(results) {
+  if (!results.length) return [];
+
+  const numQ = results[0].detail.length;
+  const stats = [];
+
+  for (let i = 0; i < numQ; i++) {
+    let correct = 0, incorrect = 0, omit = 0, invalid = 0, total = 0;
+    let isPilot = false;
+
+    results.forEach(r => {
+      const d = r.detail[i];
+      if (!d) return;
+      isPilot = d.pilot;
+      if (d.pilot) return; // las preguntas de pilotaje no entran en este ranking
+
+      total++;
+      if (d.status === 'correct')   correct++;
+      else if (d.status === 'incorrect') incorrect++;
+      else if (d.status === 'omit')      omit++;
+      else if (d.status === 'invalid')   invalid++;
+    });
+
+    const pct = total > 0 ? Math.round(correct / total * 100) : null;
+
+    stats.push({
+      qNum: i + 1,
+      pilot: isPilot,
+      total, correct, incorrect, omit, invalid,
+      pct
+    });
+  }
+
+  return stats;
+}
+
+// ─── Render principal de la sección ──────────────────────
+function renderPerQuestionStats(results) {
+  const container = document.getElementById('per-question-section');
+  if (!container) return; // si el HTML no tiene el bloque, no rompe nada
+
+  const stats = computePerQuestionStats(results).filter(s => !s.pilot && s.total > 0);
+  if (!stats.length) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+
+  const sorted = [...stats].sort((a, b) => b.pct - a.pct);
+  const best   = sorted.slice(0, 5);
+  const worst  = sorted.slice(-5).reverse();
+
+  renderPerQuestionTopCards(best, worst);
+  renderPerQuestionChart(stats);
+  renderPerQuestionTable(stats);
+}
+
+// ─── Tarjetas: top 5 más acertadas / menos acertadas ─────
+function renderPerQuestionTopCards(best, worst) {
+  const bestEl  = document.getElementById('pq-best-list');
+  const worstEl = document.getElementById('pq-worst-list');
+  if (!bestEl || !worstEl) return;
+
+  bestEl.innerHTML = best.map(s => `
+    <div class="pq-rank-item good">
+      <span class="pq-rank-q">P${s.qNum}</span>
+      <div class="pq-rank-bar"><div class="pq-rank-fill good" style="width:${s.pct}%"></div></div>
+      <span class="pq-rank-pct">${s.pct}%</span>
+    </div>
+  `).join('');
+
+  worstEl.innerHTML = worst.map(s => `
+    <div class="pq-rank-item bad">
+      <span class="pq-rank-q">P${s.qNum}</span>
+      <div class="pq-rank-bar"><div class="pq-rank-fill bad" style="width:${s.pct}%"></div></div>
+      <span class="pq-rank-pct">${s.pct}%</span>
+    </div>
+  `).join('');
+}
+
+// ─── Gráfico de barras: % acierto por cada pregunta ──────
+function renderPerQuestionChart(stats) {
+  const canvas = document.getElementById('chart-per-question');
+  if (!canvas) return;
+
+  const labels = stats.map(s => `P${s.qNum}`);
+  const data   = stats.map(s => s.pct);
+
+  destroyChart('chart-per-question');
+  const ctx = canvas.getContext('2d');
+  chartInstances['chart-per-question'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '% Acierto',
+        data,
+        backgroundColor: data.map(v => v >= 60 ? '#22d3a3' : v >= 40 ? '#f59e0b' : '#ef4444'),
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => `Pregunta ${items[0].label.replace('P','')}`,
+            label: (item) => `${item.formattedValue}% de acierto`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true, max: 100,
+          ticks: { callback: v => v + '%', color: '#94a3b8' },
+          grid: { color: '#1e293b' }
+        },
+        x: {
+          ticks: { color: '#94a3b8', maxRotation: 90, minRotation: 90, autoSkip: true },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// ─── Tabla completa por pregunta ──────────────────────────
+function renderPerQuestionTable(stats) {
+  const tbody = document.getElementById('pq-table-body');
+  if (!tbody) return;
+
+  tbody.innerHTML = stats.map(s => `
+    <tr>
+      <td><strong>P${s.qNum}</strong></td>
+      <td class="txt-green">${s.correct}</td>
+      <td class="txt-red">${s.incorrect}</td>
+      <td class="txt-gray">${s.omit}</td>
+      <td>
+        <div class="pct-bar">
+          <div class="pct-fill ${s.pct>=60?'good':s.pct>=40?'mid':'low'}" style="width:${s.pct}%"></div>
+          <span>${s.pct}%</span>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
